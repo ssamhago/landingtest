@@ -17,6 +17,8 @@ class _PostCardState extends State<PostCard> {
 
   late int pageLength;
 
+  int currentPageIndex = 0;
+
   PageController _controller = PageController();
 
   List<String> testImageList = [
@@ -29,9 +31,13 @@ class _PostCardState extends State<PostCard> {
 
   List testint = [5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20];
 
+  double initRatio = 0.5;
+
   @override
   void initState() {
     pageLength = 3+Random().nextInt(5);
+
+    initRatio = testint[Random().nextInt(16)]*0.1;
     super.initState();
   }
 
@@ -64,17 +70,38 @@ class _PostCardState extends State<PostCard> {
               ],
             ),
           ),
+
           AspectRatio(
-            aspectRatio: testint[Random().nextInt(16)]*0.1,
-            child: PageView.builder(
-              controller: _controller,
-                itemBuilder: (BuildContext context, int index){
-                  return Container(
-                    child: Image.network(testImageList[Random().nextInt(5)],fit: BoxFit.cover,),
-                  );
-                },
-              itemCount: pageLength,
-            ),
+            aspectRatio: initRatio,
+            child: Stack(
+              alignment: Alignment.topRight,
+              children: [
+                PageView.builder(
+                  itemBuilder: (BuildContext context, int index){
+                    return Container(
+                      child: Image.network(testImageList[Random().nextInt(5)],fit: BoxFit.cover,),
+                    );
+                  },
+                  itemCount: pageLength,
+                  controller: _controller,
+                  onPageChanged: (value){
+                    setState(() {
+                      currentPageIndex = value;
+                    });
+                  },
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                  margin: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.8),
+                    borderRadius: BorderRadius.circular(500)
+                  ),
+
+                  child: Text('${currentPageIndex+1}/$pageLength', style: TextStyle(color: Colors.white),),
+                )
+              ],
+            )
           ),
           Container(
             height: 40,
